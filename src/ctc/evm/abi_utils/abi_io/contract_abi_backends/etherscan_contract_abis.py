@@ -5,6 +5,7 @@ import time
 from ctc import config
 from ctc import spec
 from .... import address_utils
+from ctc import directory
 
 
 _last_request = {'time': None}
@@ -12,11 +13,11 @@ _last_request = {'time': None}
 
 async def async_get_contract_abi_from_etherscan(contract_address, network=None):
     """fetch contract abi using etherscan"""
-
+    api_key = None
     if network is None:
         network = config.get_default_network()
     if network != 'mainnet':
-        raise Exception('etherscan is only for mainnnet')
+        api_key = '&apikey=' + config.get_default_api_key()
 
     import aiohttp
 
@@ -37,8 +38,12 @@ async def async_get_contract_abi_from_etherscan(contract_address, network=None):
 
     if not address_utils.is_address_str(contract_address):
         raise Exception('not a valid address: ' + str(contract_address))
-    url_template = 'http://api.etherscan.io/api?module=contract&action=getabi&address={address}&format=raw'
-    abi_endpoint = url_template.format(address=contract_address)
+    default_networks = directory.load_networks_from_disk(use_default=True)
+    network_explorer = default_networks[network]['block_explorer']
+
+    url_template = 'http://api.{explorer}/api?module=contract&action=getabi&address={address}{key}&format=raw'
+    
+    abi_endpoint = url_template.format(explorer=network_explorer, address=contract_address, key=api_key)
     async with aiohttp.ClientSession() as session:
         async with session.get(abi_endpoint) as response:
             content = await response.text()

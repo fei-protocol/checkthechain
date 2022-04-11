@@ -24,6 +24,7 @@ from . import rpc_types
 
 class ConfigNetworkDefaults(TypedDict):
     default_network: network_types.NetworkName
+    scan_api: typing.Optional[network_types.ScanAPIKey]
     default_providers: typing.Dict[
         network_types.NetworkName, rpc_types.ProviderName
     ]
