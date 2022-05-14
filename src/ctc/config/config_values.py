@@ -99,6 +99,8 @@ def get_provider(
 def get_default_network() -> spec.NetworkName:
     return config_read.get_config()['network_defaults']['default_network']
 
+def get_default_api_key() -> spec.ScanAPIKey:
+    return config_read.get_config()['network_defaults']['scan_api']
 
 def get_default_provider(
     network: typing.Optional[spec.NetworkName] = None,

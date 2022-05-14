@@ -317,9 +317,17 @@ def specify_network_defaults(
                 style=styles['question'],
             )
             default_providers[network] = providers_per_network[network][answer]
+    scan_api_key = None
+    default_networks = directory.load_networks_from_disk(use_default=True)
+    network_explorer = default_networks[default_network]['block_explorer']
 
+    if (default_network.lower() != 'mainnet'):
+        scan_api_key = toolcli.input_prompt(
+            prompt= network_explorer+ 'API Key?', style=styles['question']
+        )
     return {
         'default_network': default_network,
+        'scan_api': scan_api_key,
         'default_providers': default_providers,
     }
 
